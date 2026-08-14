@@ -1,0 +1,921 @@
+================================================================================
+DSA PATTERNS — MASTER CHEAT SHEET
+A comprehensive list of patterns used to solve DSA problems (Easy -> Hard)
+Covers patterns seen across LeetCode, HackerRank, Codeforces, InterviewBit, etc.
+================================================================================
+
+HOW TO USE THIS DOCUMENT
+--------------------------------------------------------------------------------
+For each pattern you get:
+  - WHAT IT IS      : one-line idea
+  - WHEN TO USE      : signal phrases / clues in the problem statement
+  - TEMPLATE / IDEA  : the core technique or pseudo-approach
+  - TIME COMPLEXITY  : typical complexity achieved
+  - EXAMPLE PROBLEMS : representative LeetCode-style problems
+
+================================================================================
+1. TWO POINTERS
+================================================================================
+WHAT IT IS: Use two indices moving through a structure (often sorted array/string)
+to avoid nested loops.
+WHEN TO USE:
+  - Sorted array, pair-sum, or "find two/three elements that satisfy X"
+  - Palindrome checks, merging two sorted arrays
+  - Removing duplicates in place
+TEMPLATE:
+  left = 0, right = n-1
+  while left < right:
+      if condition_met: return / record
+      elif need_bigger_sum: left += 1
+      else: right -= 1
+TIME: O(n)
+EXAMPLES:
+  - Two Sum II (sorted array)
+  - 3Sum / 4Sum
+  - Container With Most Water
+  - Valid Palindrome
+  - Sort Colors (Dutch National Flag)
+  - Trapping Rain Water (two-pointer variant)
+
+================================================================================
+2. SLIDING WINDOW
+================================================================================
+WHAT IT IS: Maintain a window [left, right] over an array/string and expand/shrink
+it based on a condition instead of recomputing from scratch.
+WHEN TO USE:
+  - "Contiguous subarray/substring" + constraint (max/min length, sum, distinct chars)
+  - Fixed-size window (size k) or variable-size window
+TEMPLATE (variable window):
+  left = 0
+  for right in range(n):
+      add arr[right] to window
+      while window_invalid:
+          remove arr[left]; left += 1
+      update answer with window [left, right]
+TIME: O(n)
+EXAMPLES:
+  - Longest Substring Without Repeating Characters
+  - Minimum Window Substring
+  - Longest Repeating Character Replacement
+  - Sliding Window Maximum (uses monotonic deque)
+  - Maximum Sum Subarray of Size K
+  - Fruit Into Baskets
+  - Permutation in String
+
+================================================================================
+3. FAST & SLOW POINTERS (Floyd's Cycle Detection)
+================================================================================
+WHAT IT IS: Two pointers moving at different speeds through a linked list/sequence.
+WHEN TO USE:
+  - Cycle detection in linked lists
+  - Finding middle of linked list
+  - Detecting cycles in a "functional graph" (e.g., array as next-pointers)
+TEMPLATE:
+  slow = head; fast = head
+  while fast and fast.next:
+      slow = slow.next
+      fast = fast.next.next
+      if slow == fast: cycle found
+TIME: O(n)
+EXAMPLES:
+  - Linked List Cycle I / II
+  - Happy Number
+  - Middle of the Linked List
+  - Palindrome Linked List
+  - Find the Duplicate Number
+
+================================================================================
+4. MERGE INTERVALS
+================================================================================
+WHAT IT IS: Sort intervals by start time, then merge/compare overlapping ranges.
+WHEN TO USE:
+  - Problems mentioning "intervals", "meetings", "schedules", "ranges"
+TEMPLATE:
+  sort intervals by start
+  result = [intervals[0]]
+  for interval in intervals[1:]:
+      if interval.start <= result[-1].end:
+          merge (extend end)
+      else:
+          append interval
+TIME: O(n log n)
+EXAMPLES:
+  - Merge Intervals
+  - Insert Interval
+  - Non-overlapping Intervals
+  - Meeting Rooms I / II
+  - Employee Free Time
+
+================================================================================
+5. CYCLIC SORT
+================================================================================
+WHAT IT IS: For arrays with numbers in range [1..n], place each number at its
+correct index in O(n) using swaps.
+WHEN TO USE:
+  - "Find missing/duplicate number(s)" in range [1..n] with O(n) time, O(1) space
+TEMPLATE:
+  i = 0
+  while i < n:
+      correct = arr[i] - 1
+      if arr[i] != arr[correct]: swap(arr[i], arr[correct])
+      else: i += 1
+TIME: O(n)
+EXAMPLES:
+  - Find the Duplicate Number
+  - Find All Missing Numbers
+  - Find All Duplicates in an Array
+  - First Missing Positive
+  - Set Mismatch
+
+================================================================================
+6. IN-PLACE LINKED LIST REVERSAL
+================================================================================
+WHAT IT IS: Reverse (parts of) a linked list by rewiring next pointers without
+extra space.
+WHEN TO USE: "Reverse a linked list", "reverse in groups of k", "reverse sublist"
+TEMPLATE:
+  prev = None; curr = head
+  while curr:
+      next_temp = curr.next
+      curr.next = prev
+      prev = curr
+      curr = next_temp
+TIME: O(n)
+EXAMPLES:
+  - Reverse Linked List
+  - Reverse Linked List II (sublist)
+  - Reverse Nodes in k-Group
+  - Swap Nodes in Pairs
+  - Rotate List
+
+================================================================================
+7. TREE BFS (Level Order Traversal)
+================================================================================
+WHAT IT IS: Traverse tree/graph level by level using a queue.
+WHEN TO USE: "Level order", "minimum depth", "connect nodes at same level",
+"shortest path in unweighted graph"
+TEMPLATE:
+  queue = [root]
+  while queue:
+      level_size = len(queue)
+      for _ in range(level_size):
+          node = queue.pop(0)
+          process(node)
+          queue.extend(node.children)
+TIME: O(n)
+EXAMPLES:
+  - Binary Tree Level Order Traversal
+  - Zigzag Level Order Traversal
+  - Minimum Depth of Binary Tree
+  - Populating Next Right Pointers
+  - Word Ladder (BFS on graph)
+  - Rotting Oranges
+
+================================================================================
+8. TREE DFS (Preorder / Inorder / Postorder)
+================================================================================
+WHAT IT IS: Recursively (or with explicit stack) explore as deep as possible
+before backtracking.
+WHEN TO USE: "All root-to-leaf paths", "path sum", "tree height/diameter",
+"validate/construct tree"
+TEMPLATE (recursive):
+  def dfs(node, path):
+      if not node: return
+      path.append(node.val)
+      if is_leaf(node): process(path)
+      dfs(node.left, path); dfs(node.right, path)
+      path.pop()
+TIME: O(n)
+EXAMPLES:
+  - Path Sum I / II / III
+  - Binary Tree Maximum Path Sum
+  - Diameter of Binary Tree
+  - Validate Binary Search Tree
+  - Lowest Common Ancestor
+  - Serialize/Deserialize Binary Tree
+
+================================================================================
+9. TWO HEAPS
+================================================================================
+WHAT IT IS: Maintain a max-heap for the smaller half and a min-heap for the
+larger half of a data stream.
+WHEN TO USE: "Median of a stream", "schedule with two constraints (max/min)"
+TEMPLATE:
+  max_heap (smaller half), min_heap (larger half)
+  balance sizes so |len(max_heap) - len(min_heap)| <= 1
+TIME: O(log n) per insertion
+EXAMPLES:
+  - Find Median from Data Stream
+  - Sliding Window Median
+  - IPO (Maximize Capital)
+  - Meeting Rooms II (heap variant)
+
+================================================================================
+10. SUBSETS / BACKTRACKING (Combinatorial Generation)
+================================================================================
+WHAT IT IS: Explore all combinations/permutations/subsets via recursive choice
+-> explore -> un-choose (backtrack).
+WHEN TO USE: "All subsets", "all permutations", "combination sum", "N-Queens",
+"generate parentheses", constraint satisfaction
+TEMPLATE:
+  def backtrack(path, choices):
+      if is_solution(path): record(path); return (or continue for all)
+      for choice in choices:
+          if valid(choice):
+              path.append(choice)
+              backtrack(path, remaining_choices)
+              path.pop()   # undo
+TIME: O(2^n) or O(n!) depending on problem
+EXAMPLES:
+  - Subsets I / II
+  - Permutations I / II
+  - Combination Sum I / II / III
+  - N-Queens
+  - Word Search
+  - Generate Parentheses
+  - Palindrome Partitioning
+  - Sudoku Solver
+
+================================================================================
+11. MODIFIED BINARY SEARCH
+================================================================================
+WHAT IT IS: Binary search adapted for rotated arrays, answer spaces, or
+"find boundary" problems.
+WHEN TO USE: "Sorted/rotated array", "find first/last occurrence",
+"minimize/maximize X such that condition holds" (binary search on answer)
+TEMPLATE:
+  lo, hi = 0, n-1
+  while lo <= hi:
+      mid = (lo + hi) // 2
+      if condition(mid): hi = mid - 1  (or record & narrow)
+      else: lo = mid + 1
+TIME: O(log n)
+EXAMPLES:
+  - Binary Search
+  - Search in Rotated Sorted Array
+  - Find Minimum in Rotated Sorted Array
+  - Search a 2D Matrix
+  - Koko Eating Bananas (binary search on answer)
+  - Capacity to Ship Packages Within D Days
+  - Split Array Largest Sum
+  - Median of Two Sorted Arrays
+
+================================================================================
+12. BITWISE XOR / BIT MANIPULATION
+================================================================================
+WHAT IT IS: Exploit XOR/AND/OR properties (a^a=0, a^0=a) and bit tricks.
+WHEN TO USE: "Find the single/missing number", "count set bits", "no extra space"
+TEMPLATE:
+  result = 0
+  for num in nums: result ^= num
+TIME: O(n)
+EXAMPLES:
+  - Single Number I / II / III
+  - Missing Number
+  - Counting Bits
+  - Sum of Two Integers (bit addition)
+  - Number of 1 Bits
+  - Subsets using bitmask
+
+================================================================================
+13. TOP K ELEMENTS (Heap)
+================================================================================
+WHAT IT IS: Maintain a heap of size k to track top/bottom k elements efficiently.
+WHEN TO USE: "Top/K-th largest/smallest", "K closest points", "frequency sort"
+TEMPLATE:
+  heap = []
+  for item in items:
+      push item; if len(heap) > k: pop smallest/largest
+TIME: O(n log k)
+EXAMPLES:
+  - Kth Largest Element in an Array
+  - Top K Frequent Elements
+  - K Closest Points to Origin
+  - Kth Largest Element in a Stream
+  - Reorganize String
+
+================================================================================
+14. K-WAY MERGE
+================================================================================
+WHAT IT IS: Merge k sorted lists/arrays using a min-heap of size k.
+WHEN TO USE: "Merge k sorted lists", "smallest range covering k lists",
+"k-th smallest in sorted matrix"
+TEMPLATE:
+  heap = [(list[i][0], i, 0) for i in range(k)]
+  heapify(heap)
+  while heap:
+      val, list_idx, elem_idx = heappop(heap)
+      process(val)
+      if next element exists: heappush(heap, next)
+TIME: O(N log k) where N = total elements
+EXAMPLES:
+  - Merge k Sorted Lists
+  - Kth Smallest Element in a Sorted Matrix
+  - Smallest Range Covering Elements from K Lists
+  - Find K Pairs with Smallest Sums
+
+================================================================================
+15. GREEDY ALGORITHMS
+================================================================================
+WHAT IT IS: Make the locally optimal choice at each step, proven to yield a
+globally optimal solution.
+WHEN TO USE: "Maximize/minimize", scheduling, interval selection, when sorting +
+one pass gives optimal answer
+TEMPLATE:
+  sort by some criterion
+  iterate and make greedy choice, tracking running state
+TIME: O(n log n) typically (dominated by sort)
+EXAMPLES:
+  - Jump Game I / II
+  - Gas Station
+  - Task Scheduler
+  - Non-overlapping Intervals
+  - Candy
+  - Partition Labels
+  - Minimum Number of Arrows to Burst Balloons
+
+================================================================================
+16. BACKTRACKING ON GRAPHS / GRIDS (Matrix Traversal)
+================================================================================
+WHAT IT IS: DFS/BFS over grid cells, marking visited, exploring 4/8 directions.
+WHEN TO USE: "Grid", "matrix", "islands", "maze", "flood fill"
+TEMPLATE:
+  def dfs(r, c):
+      if out_of_bounds or visited or invalid: return
+      mark visited
+      for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:
+          dfs(r+dr, c+dc)
+TIME: O(rows * cols)
+EXAMPLES:
+  - Number of Islands
+  - Flood Fill
+  - Surrounded Regions
+  - Word Search
+  - Pacific Atlantic Water Flow
+  - Max Area of Island
+
+================================================================================
+17. TOPOLOGICAL SORT (Graph — DAG Ordering)
+================================================================================
+WHAT IT IS: Order nodes of a DAG so every edge u->v has u before v. Uses
+Kahn's algorithm (BFS + in-degree) or DFS + stack.
+WHEN TO USE: "Dependencies", "prerequisites", "build order", "course schedule"
+TEMPLATE (Kahn's):
+  compute in-degree for all nodes
+  queue = nodes with in-degree 0
+  while queue:
+      node = queue.pop()
+      result.append(node)
+      for neighbor in graph[node]:
+          in-degree[neighbor] -= 1
+          if in-degree[neighbor] == 0: queue.append(neighbor)
+TIME: O(V + E)
+EXAMPLES:
+  - Course Schedule I / II
+  - Alien Dictionary
+  - Sequence Reconstruction
+  - Minimum Height Trees
+
+================================================================================
+18. UNION FIND (Disjoint Set Union - DSU)
+================================================================================
+WHAT IT IS: Track connectivity/components with union + find operations
+(path compression + union by rank for near O(1) ops).
+WHEN TO USE: "Connected components", "cycle detection in undirected graph",
+"number of provinces/islands via merging", "Kruskal's MST"
+TEMPLATE:
+  parent = [i for i in range(n)]
+  def find(x):
+      if parent[x] != x: parent[x] = find(parent[x])
+      return parent[x]
+  def union(x, y):
+      rx, ry = find(x), find(y)
+      if rx != ry: parent[rx] = ry
+TIME: O(log n) amortized ~O(1) per op with path compression
+EXAMPLES:
+  - Number of Provinces
+  - Redundant Connection
+  - Accounts Merge
+  - Graph Valid Tree
+  - Number of Islands II
+  - Most Stones Removed with Same Row or Column
+
+================================================================================
+19. GRAPH SHORTEST PATH (Dijkstra / Bellman-Ford / Floyd-Warshall)
+================================================================================
+WHAT IT IS: Weighted shortest path algorithms.
+WHEN TO USE:
+  - Dijkstra: non-negative weights, single source
+  - Bellman-Ford: negative weights allowed, detect negative cycles
+  - Floyd-Warshall: all-pairs shortest path, small graph
+TEMPLATE (Dijkstra):
+  dist = {node: inf}; dist[src] = 0
+  min_heap = [(0, src)]
+  while heap:
+      d, node = heappop(heap)
+      if d > dist[node]: continue
+      for nbr, w in graph[node]:
+          if d + w < dist[nbr]:
+              dist[nbr] = d + w; heappush(heap, (d+w, nbr))
+TIME: Dijkstra O(E log V), Bellman-Ford O(V*E), Floyd-Warshall O(V^3)
+EXAMPLES:
+  - Network Delay Time
+  - Cheapest Flights Within K Stops
+  - Path With Minimum Effort
+  - Swim in Rising Water
+
+================================================================================
+20. MINIMUM SPANNING TREE (Kruskal's / Prim's)
+================================================================================
+WHAT IT IS: Find the minimum weight tree connecting all nodes.
+WHEN TO USE: "Minimum cost to connect all points/cities"
+TEMPLATE (Kruskal's): sort edges by weight, union-find to add edge if no cycle
+TIME: O(E log E)
+EXAMPLES:
+  - Min Cost to Connect All Points
+  - Optimize Water Distribution in a Village
+
+================================================================================
+21. DYNAMIC PROGRAMMING — 1D
+================================================================================
+WHAT IT IS: Break problem into overlapping subproblems; store results in a
+1D array (memoization or tabulation).
+WHEN TO USE: "Count ways", "min/max cost", "can you reach", with recurrence
+relying on smaller indices
+TEMPLATE:
+  dp[0] = base_case
+  for i in range(1, n):
+      dp[i] = f(dp[i-1], dp[i-2], ...)
+TIME: O(n)
+EXAMPLES:
+  - Climbing Stairs
+  - House Robber I / II
+  - Coin Change
+  - Longest Increasing Subsequence
+  - Word Break
+  - Decode Ways
+  - Maximum Subarray (Kadane's)
+
+================================================================================
+22. DYNAMIC PROGRAMMING — 2D (Grid / Two Sequences)
+================================================================================
+WHAT IT IS: DP table dp[i][j] representing subproblem on two indices/sequences.
+WHEN TO USE: "Two strings", "grid path", "edit distance", "LCS-type problems"
+TEMPLATE:
+  dp[0][*] / dp[*][0] = base cases
+  for i in range(1, m):
+      for j in range(1, n):
+          dp[i][j] = f(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+TIME: O(m*n)
+EXAMPLES:
+  - Longest Common Subsequence
+  - Edit Distance
+  - Unique Paths I / II
+  - Minimum Path Sum
+  - Interleaving String
+  - Regular Expression Matching
+  - Distinct Subsequences
+
+================================================================================
+23. DYNAMIC PROGRAMMING — KNAPSACK (0/1, Unbounded, Subset Sum)
+================================================================================
+WHAT IT IS: Choose items with weight/value constraints to optimize a total.
+WHEN TO USE: "Subset sum", "partition equal subset", "target sum", "coin change
+(min coins / number of ways)"
+TEMPLATE (0/1 knapsack):
+  dp[w] = max value achievable with capacity w
+  for item in items:
+      for w in range(capacity, item.weight - 1, -1):
+          dp[w] = max(dp[w], dp[w - item.weight] + item.value)
+TIME: O(n * capacity)
+EXAMPLES:
+  - Partition Equal Subset Sum
+  - Target Sum
+  - Coin Change II (number of ways)
+  - Last Stone Weight II
+  - Ones and Zeroes
+
+================================================================================
+24. DYNAMIC PROGRAMMING — INTERVAL / RANGE
+================================================================================
+WHAT IT IS: dp[i][j] represents the answer for subarray/substring [i..j];
+build up from smaller ranges to larger ranges.
+WHEN TO USE: "Palindromic substrings", "matrix chain multiplication style",
+"merge intervals to minimize/maximize cost"
+TEMPLATE:
+  for length in range(2, n+1):
+      for i in range(0, n-length+1):
+          j = i + length - 1
+          dp[i][j] = f(dp[i][k], dp[k+1][j]) for k in range(i, j)
+TIME: O(n^3) typically
+EXAMPLES:
+  - Longest Palindromic Substring/Subsequence
+  - Burst Balloons
+  - Minimum Cost to Merge Stones
+  - Palindrome Partitioning II
+
+================================================================================
+25. DYNAMIC PROGRAMMING — TREE DP
+================================================================================
+WHAT IT IS: DP defined over tree nodes, combining children's DP states.
+WHEN TO USE: "Max/min value in a tree with parent-child constraints"
+TEMPLATE:
+  def dfs(node):
+      if not node: return base_case
+      left = dfs(node.left); right = dfs(node.right)
+      return combine(node.val, left, right)
+TIME: O(n)
+EXAMPLES:
+  - House Robber III
+  - Binary Tree Cameras
+  - Diameter of Binary Tree (DP variant)
+  - Longest Path with Same Value in Tree
+
+================================================================================
+26. DYNAMIC PROGRAMMING — BITMASK
+================================================================================
+WHAT IT IS: Use a bitmask to represent subset states (visited nodes, assigned
+items) as DP dimension. Feasible when n is small (<=20).
+WHEN TO USE: "Traveling salesman", "assign tasks to people", "visit all nodes"
+TEMPLATE:
+  dp[mask][i] = best cost visiting subset `mask` ending at i
+  for mask in range(1<<n):
+      for i in range(n):
+          if mask has bit i: try transition to next unvisited bit
+TIME: O(n^2 * 2^n)
+EXAMPLES:
+  - Traveling Salesman Problem
+  - Shortest Path Visiting All Nodes
+  - Partition to K Equal Sum Subsets
+  - Smallest Sufficient Team
+
+================================================================================
+27. TRIE (Prefix Tree)
+================================================================================
+WHAT IT IS: Tree structure storing strings by shared prefixes for fast lookup.
+WHEN TO USE: "Autocomplete", "prefix search", "word dictionary", "longest
+common prefix among many words"
+TEMPLATE:
+  class TrieNode: children = {}, is_end = False
+  insert(word): walk/create nodes char by char, mark last as is_end
+  search(word): walk nodes; return found and is_end
+TIME: O(L) per operation (L = word length)
+EXAMPLES:
+  - Implement Trie
+  - Word Search II
+  - Design Add and Search Words Data Structure
+  - Replace Words
+  - Longest Word in Dictionary
+
+================================================================================
+28. MONOTONIC STACK
+================================================================================
+WHAT IT IS: Stack that maintains increasing/decreasing order; pop elements
+that violate the order to find next greater/smaller element efficiently.
+WHEN TO USE: "Next greater/smaller element", "largest rectangle in histogram",
+"daily temperatures", "stock span"
+TEMPLATE:
+  stack = []
+  for i, val in enumerate(arr):
+      while stack and arr[stack[-1]] < val:
+          idx = stack.pop(); result[idx] = i - idx  (or val)
+      stack.append(i)
+TIME: O(n)
+EXAMPLES:
+  - Daily Temperatures
+  - Largest Rectangle in Histogram
+  - Next Greater Element I / II
+  - Trapping Rain Water (stack variant)
+  - Remove K Digits
+  - Online Stock Span
+
+================================================================================
+29. MONOTONIC DEQUE (Sliding Window Max/Min)
+================================================================================
+WHAT IT IS: Deque that keeps elements in monotonic order to get window max/min
+in O(1) amortized.
+WHEN TO USE: "Sliding window maximum/minimum"
+TEMPLATE:
+  deque = []
+  for i, val in enumerate(arr):
+      while deque and arr[deque[-1]] <= val: deque.pop()
+      deque.append(i)
+      if deque[0] <= i - k: deque.popleft()
+      if i >= k-1: result.append(arr[deque[0]])
+TIME: O(n)
+EXAMPLES:
+  - Sliding Window Maximum
+  - Shortest Subarray with Sum at Least K
+  - Constrained Subsequence Sum
+
+================================================================================
+30. PREFIX SUM / DIFFERENCE ARRAY
+================================================================================
+WHAT IT IS: Precompute cumulative sums to answer range-sum queries in O(1),
+or use difference arrays for O(1) range updates.
+WHEN TO USE: "Range sum queries", "subarray sum equals K", "range update then
+query final array"
+TEMPLATE:
+  prefix[0] = 0
+  for i in range(n): prefix[i+1] = prefix[i] + arr[i]
+  range_sum(l, r) = prefix[r+1] - prefix[l]
+TIME: O(n) preprocessing, O(1) per query
+EXAMPLES:
+  - Range Sum Query - Immutable
+  - Subarray Sum Equals K
+  - Contiguous Array
+  - Product of Array Except Self
+  - Range Addition (difference array)
+  - Corporate Flight Bookings
+
+================================================================================
+31. FENWICK TREE / BINARY INDEXED TREE (BIT)
+================================================================================
+WHAT IT IS: Data structure for prefix sums with O(log n) point update and
+range query.
+WHEN TO USE: "Range sum query - mutable", "count of smaller numbers after self"
+TEMPLATE:
+  update(i, delta): while i <= n: tree[i] += delta; i += i & (-i)
+  query(i): total = 0; while i > 0: total += tree[i]; i -= i & (-i); return total
+TIME: O(log n) per update/query
+EXAMPLES:
+  - Range Sum Query - Mutable
+  - Count of Smaller Numbers After Self
+  - Count of Range Sum
+
+================================================================================
+32. SEGMENT TREE
+================================================================================
+WHAT IT IS: Binary tree over an array enabling O(log n) range queries
+(sum/min/max) and updates.
+WHEN TO USE: Same as Fenwick but supports more general range queries (min/max/
+gcd) and range updates with lazy propagation.
+TEMPLATE: build tree recursively; query/update by splitting range into
+left/right child ranges
+TIME: O(log n) per operation
+EXAMPLES:
+  - Range Sum Query - Mutable
+  - Range Minimum Query
+  - Falling Squares
+  - Count of Range Sum
+  - My Calendar III
+
+================================================================================
+33. STRING MATCHING (KMP / Rabin-Karp / Z-Algorithm)
+================================================================================
+WHAT IT IS: Efficient substring search algorithms avoiding O(n*m) brute force.
+WHEN TO USE: "Find pattern in text", "repeated substring pattern",
+"shortest palindrome" (via KMP failure function)
+TEMPLATE (KMP): build LPS (longest prefix suffix) array, then scan text
+using LPS to skip redundant comparisons
+TIME: O(n + m)
+EXAMPLES:
+  - Implement strStr()
+  - Repeated Substring Pattern
+  - Shortest Palindrome
+  - Longest Happy Prefix
+
+================================================================================
+34. MATRIX / GRID TRAVERSAL PATTERNS (Spiral, Rotate, Diagonal)
+================================================================================
+WHAT IT IS: Systematic index manipulation to traverse/transform 2D matrices.
+WHEN TO USE: "Rotate image", "spiral matrix", "diagonal traverse", "set matrix
+zeroes"
+TEMPLATE: track boundaries (top,bottom,left,right) and shrink after each pass
+TIME: O(rows * cols)
+EXAMPLES:
+  - Spiral Matrix I / II
+  - Rotate Image
+  - Set Matrix Zeroes
+  - Diagonal Traverse
+  - Game of Life
+
+================================================================================
+35. RECURSION / DIVIDE & CONQUER
+================================================================================
+WHAT IT IS: Split problem into independent subproblems, solve recursively,
+combine results.
+WHEN TO USE: "Merge sort/quick sort style", "closest pair of points",
+"different ways to compute an expression"
+TEMPLATE:
+  def solve(problem):
+      if base_case: return trivial_answer
+      left = solve(left_half); right = solve(right_half)
+      return combine(left, right)
+TIME: O(n log n) typical
+EXAMPLES:
+  - Merge Sort / Quick Sort
+  - Kth Largest Element (Quickselect)
+  - Different Ways to Add Parentheses
+  - Count of Smaller Numbers After Self (merge sort variant)
+  - Construct Binary Tree from Preorder/Inorder
+
+================================================================================
+36. BACKTRACKING WITH PRUNING (Constraint Satisfaction)
+================================================================================
+WHAT IT IS: Backtracking enhanced with early pruning to cut invalid branches
+fast (used for hard combinatorial puzzles).
+WHEN TO USE: "Sudoku", "N-Queens", "word squares", scheduling puzzles
+TEMPLATE: same as backtracking, but add feasibility checks BEFORE recursing
+TIME: exponential worst case but pruning makes it practical
+EXAMPLES:
+  - N-Queens / N-Queens II
+  - Sudoku Solver
+  - Word Squares
+  - Expression Add Operators
+
+================================================================================
+37. GREEDY + HEAP (Scheduling / Interval Optimization)
+================================================================================
+WHAT IT IS: Combine greedy choice with heap to always pick current best option.
+WHEN TO USE: "Task scheduler", "minimum number of platforms/meeting rooms",
+"reorganize string so no two adjacent are the same"
+TEMPLATE: push tasks into heap by priority (frequency/deadline), pop greedily
+TIME: O(n log n)
+EXAMPLES:
+  - Task Scheduler
+  - Reorganize String
+  - Rearrange String k Distance Apart
+  - Meeting Rooms II
+
+================================================================================
+38. UNION FIND + KRUSKAL (already covered) / GRAPH COLORING
+================================================================================
+WHAT IT IS: Assign colors/labels to graph nodes such that adjacent nodes differ
+(bipartite check) or satisfy constraints.
+WHEN TO USE: "Is graph bipartite", "possible bipartition", "flower planting"
+TEMPLATE: BFS/DFS coloring with 2 colors, check conflicts
+TIME: O(V + E)
+EXAMPLES:
+  - Is Graph Bipartite
+  - Possible Bipartition
+  - Flower Planting With No Adjacent
+
+================================================================================
+39. RESERVOIR SAMPLING / RANDOMIZED ALGORITHMS
+================================================================================
+WHAT IT IS: Randomized techniques for uniform sampling from a stream, or
+randomized pivot selection.
+WHEN TO USE: "Random pick from stream/list", "shuffle array"
+TEMPLATE (reservoir sampling of 1): for i-th element (1-indexed), keep it with
+probability 1/i
+TIME: O(n)
+EXAMPLES:
+  - Linked List Random Node
+  - Random Pick Index
+  - Shuffle an Array
+  - Random Pick with Weight
+
+================================================================================
+40. DESIGN / SIMULATION PATTERNS
+================================================================================
+WHAT IT IS: No single algorithmic trick — implement a data structure or
+simulate a process exactly as described, choosing the right underlying
+structures (hashmap + doubly linked list, multiple stacks/queues, etc.).
+WHEN TO USE: "Design a...", "implement a...", "simulate the following process"
+EXAMPLES:
+  - LRU Cache (hashmap + doubly linked list)
+  - LFU Cache
+  - Design Twitter
+  - Min Stack / Max Stack
+  - Design Circular Queue/Buffer
+  - Snake Game
+  - Insert Delete GetRandom O(1)
+
+================================================================================
+41. MATH / NUMBER THEORY PATTERNS
+================================================================================
+WHAT IT IS: GCD/LCM, sieve of Eratosthenes, modular arithmetic, combinatorics.
+WHEN TO USE: "Prime numbers", "GCD/LCM", "modulo large number", "count
+combinations"
+TEMPLATE (Sieve): mark multiples of each prime starting from 2 up to sqrt(n)
+TIME: O(n log log n) for sieve
+EXAMPLES:
+  - Count Primes
+  - Sieve of Eratosthenes based problems
+  - Pow(x, n) — fast exponentiation
+  - Excel Sheet Column Number/Title
+  - Greatest Common Divisor of Strings
+  - Unique Paths (combinatorics: C(m+n-2, m-1))
+
+================================================================================
+42. HASHMAP / HASHSET PATTERNS
+================================================================================
+WHAT IT IS: Use hashing for O(1) average lookup to avoid nested loops or track
+frequency/seen state.
+WHEN TO USE: "Two Sum", "group anagrams", "check duplicates", "frequency count"
+TEMPLATE:
+  seen = {}
+  for i, val in enumerate(arr):
+      if target - val in seen: return (seen[target-val], i)
+      seen[val] = i
+TIME: O(n)
+EXAMPLES:
+  - Two Sum
+  - Group Anagrams
+  - Longest Consecutive Sequence
+  - Subarray Sum Equals K
+  - Contains Duplicate II
+  - Isomorphic Strings
+
+================================================================================
+43. MULTI-SOURCE BFS
+================================================================================
+WHAT IT IS: BFS starting simultaneously from multiple source nodes, useful for
+"distance from nearest X" type problems.
+WHEN TO USE: "Nearest 0", "rotting oranges", "walls and gates"
+TEMPLATE:
+  queue = all source nodes with distance 0
+  standard BFS expansion, tracking distance/level
+TIME: O(V + E)
+EXAMPLES:
+  - Rotting Oranges
+  - 01 Matrix (Distance to nearest 0)
+  - Walls and Gates
+  - Shortest Distance from All Buildings
+
+================================================================================
+44. A* / HEURISTIC SEARCH (Advanced Graph)
+================================================================================
+WHAT IT IS: Dijkstra augmented with a heuristic function to prioritize
+promising paths.
+WHEN TO USE: Rare on LeetCode; appears in pathfinding puzzles with grid + weights
+TIME: depends on heuristic quality
+EXAMPLES:
+  - Sliding Puzzle (BFS on state space, sometimes with heuristic)
+  - Shortest Path in a Grid with Obstacle Elimination
+
+================================================================================
+QUICK PATTERN-SELECTION CHEAT SHEET (by problem clue)
+--------------------------------------------------------------------------------
+  "sorted array, pair"                -> Two Pointers / Binary Search
+  "contiguous subarray/substring"     -> Sliding Window / Prefix Sum
+  "linked list cycle / middle"        -> Fast & Slow Pointers
+  "intervals/meetings"                -> Merge Intervals / Greedy + Heap
+  "range [1..n], missing/duplicate"   -> Cyclic Sort
+  "reverse linked list"               -> In-place Reversal
+  "level order / shortest path (unweighted)" -> BFS
+  "all paths / height / diameter"     -> Tree DFS / Tree DP
+  "median of stream"                  -> Two Heaps
+  "all subsets/permutations/combos"   -> Backtracking
+  "rotated sorted array / min-max ans"-> Modified Binary Search
+  "single/missing number, no extra space" -> Bit Manipulation (XOR)
+  "top/K-th element"                  -> Heap (Top K)
+  "merge k sorted lists/arrays"       -> K-way Merge
+  "maximize/minimize with sorting"    -> Greedy
+  "grid/matrix/islands"               -> Grid DFS/BFS
+  "course schedule / dependencies"    -> Topological Sort
+  "connected components / cycles"     -> Union Find
+  "shortest path with weights"        -> Dijkstra / Bellman-Ford
+  "connect all with min cost"         -> MST (Kruskal/Prim)
+  "count ways / min-max cost (1 seq)" -> DP 1D
+  "two strings/sequences"             -> DP 2D (LCS-style)
+  "subset sum / partition"            -> DP Knapsack
+  "palindromic substrings/ranges"     -> DP Interval
+  "prefix search / autocomplete"      -> Trie
+  "next greater/smaller element"      -> Monotonic Stack
+  "sliding window max/min"            -> Monotonic Deque
+  "range sum query immutable"         -> Prefix Sum
+  "range sum query mutable"           -> Fenwick Tree / Segment Tree
+  "find pattern in text"              -> KMP / Rabin-Karp
+  "spiral/rotate matrix"              -> Matrix Traversal patterns
+  "design a data structure"           -> Design/Simulation
+  "primes / GCD / modulo"             -> Math/Number Theory
+  "frequency / duplicates / grouping" -> HashMap/HashSet
+  "nearest 0 / multi start point"     -> Multi-source BFS
+
+================================================================================
+RECOMMENDED LEARNING ORDER (Easy -> Hard)
+--------------------------------------------------------------------------------
+1. Arrays & HashMap basics             (#42)
+2. Two Pointers & Sliding Window       (#1, #2)
+3. Linked List techniques              (#3, #6)
+4. Stacks & Monotonic Stack            (#28, #29)
+5. Binary Search & variants            (#11)
+6. Trees: BFS/DFS traversal            (#7, #8)
+7. Heaps: Top K, Two Heaps, K-way merge (#9, #13, #14)
+8. Recursion & Backtracking            (#10, #35, #36)
+9. Greedy                              (#15, #37)
+10. Graphs: BFS/DFS, Topo Sort, Union Find (#16-18, #43)
+11. Weighted Graphs: Dijkstra, MST     (#19, #20)
+12. Dynamic Programming: 1D -> 2D -> Knapsack -> Interval -> Tree -> Bitmask
+    (#21-26)
+13. Advanced structures: Trie, Fenwick Tree, Segment Tree (#27, #31, #32)
+14. String algorithms: KMP, Rabin-Karp (#33)
+15. Math & Bit Manipulation            (#12, #41)
+16. Design problems                    (#40)
+
+================================================================================
+NOTES
+--------------------------------------------------------------------------------
+- Many "hard" LeetCode problems are simply combinations of 2-3 patterns above
+  (e.g., Sliding Window + HashMap, or DP + Bitmask, or Backtracking + Trie).
+- When stuck, ask: "What is the brute force?" then look for which pattern
+  removes the redundant work in that brute force (that's usually the pattern
+  the problem wants).
+- Always identify: input size constraints (n) to guess expected complexity:
+    n <= ~20         -> exponential/bitmask DP/backtracking OK
+    n <= ~1,000       -> O(n^2) OK
+    n <= ~100,000     -> O(n log n) needed
+    n <= ~1,000,000+  -> O(n) or O(n log n) with small constant
+================================================================================

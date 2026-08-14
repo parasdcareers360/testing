@@ -1,0 +1,4 @@
+"Method","Code example","What it actually does","Do a and b share data?","When to use"
+"Assignment (reference)","b = a","Makes b point to the same object as a (same memory).","✅ Yes, everything is shared. Changing b changes a.","When you want two names for the same data (e.g., passing to a function)."
+"Shallow copy","b = a.copy()b = a[:]b = copy.copy(a)","Creates a new outer container, but inner objects are still references to the originals.","⚠️ Partially: outer list is new, but nested mutable objects are shared.","Flat lists/dicts with only immutables (ints, strings), or when nested objects don’t need to be independent."
+"Deep copy","b = copy.deepcopy(a)","Creates a new outer container and recursively copies all nested objects.","❌ No, nothing is shared. Changing b never affects a.","Nested mutable structures (list of lists, dicts with list values, complex objects) where you need full independence."
